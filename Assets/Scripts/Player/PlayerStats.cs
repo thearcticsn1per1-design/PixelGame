@@ -7,8 +7,7 @@ namespace PixelGame
     /// <summary>
     /// Manages all player statistics including base stats, modifiers, and calculations
     /// </summary>
-    [System.Serializable]
-    public class PlayerStats
+    public class PlayerStats : MonoBehaviour
     {
         #region Base Stats
 

@@ -7,7 +7,6 @@ namespace PixelGame
     /// Main player controller handling movement, combat, and input
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(PlayerStats))]
     public class PlayerController : MonoBehaviour, IDamageable
     {
         [Header("Components")]
