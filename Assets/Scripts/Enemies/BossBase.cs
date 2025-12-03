@@ -85,7 +85,7 @@ namespace PixelGame
             }
 
             // Stop all actions
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             currentState = EnemyState.Stunned;
 
             // Phase transition effects

@@ -248,7 +248,7 @@ namespace PixelGame
             float moveSpeed = stats.GetStat(StatType.MoveSpeed);
             Vector2 velocity = moveInput.normalized * moveSpeed;
 
-            rb.velocity = velocity;
+            rb.linearVelocity = velocity;
 
             // Handle dash
             if (dashInput)
@@ -278,12 +278,12 @@ namespace PixelGame
             float elapsed = 0f;
             while (elapsed < dashDuration)
             {
-                rb.velocity = dashDir * dashSpeed;
+                rb.linearVelocity = dashDir * dashSpeed;
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             isDashing = false;
             isInvincible = wasInvincible;
 
@@ -383,7 +383,7 @@ namespace PixelGame
             if (isDead) return;
 
             isDead = true;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
 
             // Trigger death events
             GameEvents.PlayerDeath();
