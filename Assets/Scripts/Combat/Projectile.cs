@@ -66,7 +66,7 @@ namespace PixelGame
             hitEnemies.Clear();
 
             // Set velocity
-            rb.velocity = direction * data.speed;
+            rb.linearVelocity = direction * data.speed;
 
             // Rotate sprite to face direction
             if (spriteRenderer != null)
@@ -216,7 +216,7 @@ namespace PixelGame
                 newDirection.Normalize();
 
                 direction = newDirection;
-                rb.velocity = direction * data.speed;
+                rb.linearVelocity = direction * data.speed;
 
                 // Update rotation
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

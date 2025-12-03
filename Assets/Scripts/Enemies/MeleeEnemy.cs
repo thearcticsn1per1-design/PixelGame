@@ -33,7 +33,7 @@ namespace PixelGame
                     if (!IsPlayerInRange(detectionRange))
                     {
                         currentState = EnemyState.Idle;
-                        rb.velocity = Vector2.zero;
+                        rb.linearVelocity = Vector2.zero;
                     }
                     else if (IsPlayerInRange(attackRange))
                     {
@@ -59,7 +59,7 @@ namespace PixelGame
                 if (Time.time >= lungeEndTime)
                 {
                     isLunging = false;
-                    rb.velocity = Vector2.zero;
+                    rb.linearVelocity = Vector2.zero;
                 }
             }
         }
@@ -71,7 +71,7 @@ namespace PixelGame
             switch (currentState)
             {
                 case EnemyState.Idle:
-                    rb.velocity = Vector2.zero;
+                    rb.linearVelocity = Vector2.zero;
                     break;
 
                 case EnemyState.Chasing:
@@ -80,7 +80,7 @@ namespace PixelGame
 
                 case EnemyState.Attacking:
                     // Slow down when attacking
-                    rb.velocity = rb.velocity * 0.5f;
+                    rb.linearVelocity = rb.linearVelocity * 0.5f;
                     break;
             }
         }
@@ -93,7 +93,7 @@ namespace PixelGame
             {
                 // Lunge toward player
                 Vector2 lungeDirection = GetDirectionToPlayer();
-                rb.velocity = lungeDirection * lungeSpeed;
+                rb.linearVelocity = lungeDirection * lungeSpeed;
                 isLunging = true;
                 lungeEndTime = Time.time + lungeDuration;
             }

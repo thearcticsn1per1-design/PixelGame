@@ -140,7 +140,7 @@ namespace PixelGame
         protected void MoveTowardsPlayer(float speed)
         {
             Vector2 direction = GetDirectionToPlayer();
-            rb.velocity = direction * speed;
+            rb.linearVelocity = direction * speed;
 
             // Flip sprite based on movement direction
             if (spriteRenderer != null && direction.x != 0)
@@ -152,7 +152,7 @@ namespace PixelGame
         protected void MoveAwayFromPlayer(float speed)
         {
             Vector2 direction = -GetDirectionToPlayer();
-            rb.velocity = direction * speed;
+            rb.linearVelocity = direction * speed;
 
             // Flip sprite
             if (spriteRenderer != null && direction.x != 0)
@@ -206,13 +206,13 @@ namespace PixelGame
         private IEnumerator KnockbackCoroutine(Vector2 direction, float force)
         {
             isKnockedBack = true;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
             rb.AddForce(direction * force, ForceMode2D.Impulse);
 
             yield return new WaitForSeconds(knockbackDuration);
 
             isKnockedBack = false;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         }
 
         public virtual void Die()
@@ -221,7 +221,7 @@ namespace PixelGame
 
             isDead = true;
             currentState = EnemyState.Dead;
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
 
             // Disable collider
             Collider2D col = GetComponent<Collider2D>();
@@ -336,7 +336,7 @@ namespace PixelGame
         {
             if (animator == null) return;
 
-            animator.SetFloat("Speed", rb.velocity.magnitude);
+            animator.SetFloat("Speed", rb.linearVelocity.magnitude);
             animator.SetBool("IsAttacking", currentState == EnemyState.Attacking);
         }
 

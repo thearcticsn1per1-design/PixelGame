@@ -91,7 +91,7 @@ namespace PixelGame
             switch (currentState)
             {
                 case EnemyState.Idle:
-                    rb.velocity = Vector2.zero;
+                    rb.linearVelocity = Vector2.zero;
                     break;
 
                 case EnemyState.Chasing:
@@ -102,13 +102,13 @@ namespace PixelGame
                     }
                     else
                     {
-                        rb.velocity = Vector2.zero;
+                        rb.linearVelocity = Vector2.zero;
                     }
                     break;
 
                 case EnemyState.Attacking:
                     // Strafe or stay still while attacking
-                    rb.velocity = rb.velocity * 0.3f;
+                    rb.linearVelocity = rb.linearVelocity * 0.3f;
                     break;
 
                 case EnemyState.Fleeing:
