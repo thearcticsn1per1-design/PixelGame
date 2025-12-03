@@ -38,7 +38,6 @@ namespace PixelGame
         private Vector2 aimDirection;
         private bool attackInput;
         private bool dashInput;
-        private bool interactInput;
 
         // State
         private bool isDashing = false;
@@ -184,12 +183,6 @@ namespace PixelGame
             if (Input.GetKeyDown(KeyCode.Space) && canDash && !isDashing)
             {
                 dashInput = true;
-            }
-
-            // Interact input
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                interactInput = true;
             }
         }
 
