@@ -9,7 +9,7 @@ namespace PixelGame
     public class MeleeWeapon : WeaponBase
     {
         [Header("Melee Settings")]
-        [SerializeField] private float swingArc = 90f;
+        [SerializeField] private float swingArc = 360f; // Full circle for testing - adjust later
         [SerializeField] private LayerMask enemyLayer;
         [SerializeField] private Transform hitboxCenter;
 
@@ -119,13 +119,21 @@ namespace PixelGame
 
         private bool IsInSwingArc(Vector3 targetPosition, Vector2 attackDirection)
         {
-            if (attackDirection.sqrMagnitude < 0.01f) return true; // No direction = hit all
+            if (attackDirection.sqrMagnitude < 0.01f)
+            {
+                Debug.Log("MeleeWeapon: No attack direction, hitting everything in range");
+                return true; // No direction = hit all
+            }
 
             Vector3 attackPos = hitboxCenter != null ? hitboxCenter.position : transform.position;
             Vector2 toTarget = (targetPosition - attackPos).normalized;
 
             float angle = Vector2.Angle(attackDirection, toTarget);
-            return angle <= swingArc / 2f;
+            bool inArc = angle <= swingArc / 2f;
+
+            Debug.Log($"MeleeWeapon: Attack dir={attackDirection}, To target={toTarget}, Angle={angle:F1}°, Arc={swingArc}°, In arc={inArc}");
+
+            return inArc;
         }
 
         private void ApplyKnockback(GameObject target, Vector2 direction)
