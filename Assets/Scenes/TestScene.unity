@@ -553,10 +553,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeleeEnemy
       objectReference: {fileID: 0}
+<<<<<<< Updated upstream
     - target: {fileID: 4348738204358733992, guid: 1800d2cbfd999af40bafe12050609fd1, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+=======
+>>>>>>> Stashed changes
     - target: {fileID: 7812936999076929059, guid: 1800d2cbfd999af40bafe12050609fd1, type: 3}
       propertyPath: m_LocalScale.x
       value: 3.51

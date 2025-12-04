@@ -51,6 +51,96 @@ namespace PixelGame
         // Character class
         private CharacterClass characterClass;
 
+        // --- ADDED: Direction enum + lastDirection tracking ---
+        private enum Direction
+        {
+            North, NorthEast, East, SouthEast,
+            South, SouthWest, West, NorthWest
+        }
+
+        private Direction lastDirection = Direction.South;
+
+        // --- ADDED: Convert movement vector to direction ---
+        private Direction GetDirectionFromInput(Vector2 input)
+        {
+            if (input == Vector2.zero)
+                return lastDirection;
+
+            float angle = Mathf.Atan2(input.y, input.x) * Mathf.Rad2Deg;
+            if (angle < 0) angle += 360f;
+
+            if (angle >= 337.5f || angle < 22.5f) return Direction.East;
+            if (angle < 67.5f) return Direction.NorthEast;
+            if (angle < 112.5f) return Direction.North;
+            if (angle < 157.5f) return Direction.NorthWest;
+            if (angle < 202.5f) return Direction.West;
+            if (angle < 247.5f) return Direction.SouthWest;
+            if (angle < 292.5f) return Direction.South;
+            return Direction.SouthEast;
+        }
+
+        // --- ADDED: Clear all direction animator bools ---
+        private void ClearDirectionBools()
+        {
+            animator.SetBool("MoveNorth", false);
+            animator.SetBool("MoveNorthEast", false);
+            animator.SetBool("MoveEast", false);
+            animator.SetBool("MoveSouthEast", false);
+            animator.SetBool("MoveSouth", false);
+            animator.SetBool("MoveSouthWest", false);
+            animator.SetBool("MoveWest", false);
+            animator.SetBool("MoveNorthWest", false);
+
+            animator.SetBool("isNorth", false);
+            animator.SetBool("isNorthEast", false);
+            animator.SetBool("isEast", false);
+            animator.SetBool("isSouthEast", false);
+            animator.SetBool("isSouth", false);
+            animator.SetBool("isSouthWest", false);
+            animator.SetBool("isWest", false);
+            animator.SetBool("isNorthWest", false);
+        }
+
+        // --- ADDED: Set correct direction bools ---
+        private void SetDirectionBools(Direction dir, bool isMoving)
+        {
+            switch (dir)
+            {
+                case Direction.North:
+                    animator.SetBool("isNorth", true);
+                    if (isMoving) animator.SetBool("MoveNorth", true);
+                    break;
+                case Direction.NorthEast:
+                    animator.SetBool("isNorthEast", true);
+                    if (isMoving) animator.SetBool("MoveNorthEast", true);
+                    break;
+                case Direction.East:
+                    animator.SetBool("isEast", true);
+                    if (isMoving) animator.SetBool("MoveEast", true);
+                    break;
+                case Direction.SouthEast:
+                    animator.SetBool("isSouthEast", true);
+                    if (isMoving) animator.SetBool("MoveSouthEast", true);
+                    break;
+                case Direction.South:
+                    animator.SetBool("isSouth", true);
+                    if (isMoving) animator.SetBool("MoveSouth", true);
+                    break;
+                case Direction.SouthWest:
+                    animator.SetBool("isSouthWest", true);
+                    if (isMoving) animator.SetBool("MoveSouthWest", true);
+                    break;
+                case Direction.West:
+                    animator.SetBool("isWest", true);
+                    if (isMoving) animator.SetBool("MoveWest", true);
+                    break;
+                case Direction.NorthWest:
+                    animator.SetBool("isNorthWest", true);
+                    if (isMoving) animator.SetBool("MoveNorthWest", true);
+                    break;
+            }
+        }
+
         #region Unity Lifecycle
 
         private void Awake()
@@ -206,6 +296,21 @@ namespace PixelGame
                     weaponPivot.localScale = new Vector3(weaponPivot.localScale.x, 1, 1);
                 }
             }
+<<<<<<< Updated upstream
+=======
+
+            if (spriteRenderer != null)
+            {
+                if (moveInput.x != 0)
+                {
+                    spriteRenderer.flipX = moveInput.x < 0;
+                }
+                else if (aimDirection.x != 0)
+                {
+                    spriteRenderer.flipX = aimDirection.x < 0;
+                }
+            }
+>>>>>>> Stashed changes
         }
 
         #endregion
@@ -289,7 +394,7 @@ namespace PixelGame
                 Debug.Log($"PlayerController.EquipWeapon: Instantiating weapon prefab at weaponPivot");
                 Debug.Log($"PlayerController.EquipWeapon: WeaponPivot = {weaponPivot?.name}, Position = {weaponPivot?.position}");
 
-                GameObject weaponObj = Instantiate(weaponData.weaponPrefab, weaponPivot);
+                GameObject weaponObj = GameObject.Instantiate(weaponData.weaponPrefab, weaponPivot);
                 weaponObj.transform.localPosition = weaponData.weaponOffset;
 
                 Debug.Log($"PlayerController.EquipWeapon: Weapon spawned: {weaponObj.name}");
@@ -443,6 +548,7 @@ namespace PixelGame
         {
             if (animator == null) return;
 
+<<<<<<< Updated upstream
             if (moveInput.sqrMagnitude > 0.01f)
             {
                 lastMoveDirection = moveInput.normalized;
@@ -455,6 +561,29 @@ namespace PixelGame
             animator.SetFloat("Speed", moveInput.magnitude);
             animator.SetBool("IsDashing", isDashing);
             animator.SetBool("IsAttacking", currentWeapon != null && attackInput);
+=======
+            // Your existing animator parameters (kept exactly as-is)
+            animator.SetFloat("Speed", moveInput.magnitude);
+            animator.SetBool("IsDashing", isDashing);
+
+            // --- ADDED: 8-direction animation handling ---
+            Vector2 input = moveInput.normalized;
+            bool isMoving = input.sqrMagnitude > 0.1f && !isDashing;
+
+            // Global walking flag
+            animator.SetBool("isWalking", isMoving);
+
+            // Determine facing direction
+            Direction dir = GetDirectionFromInput(input);
+            if (isMoving)
+                lastDirection = dir;
+
+            // Clear all movement/facing bools
+            ClearDirectionBools();
+
+            // Apply new direction
+            SetDirectionBools(lastDirection, isMoving);
+>>>>>>> Stashed changes
         }
 
         #endregion
