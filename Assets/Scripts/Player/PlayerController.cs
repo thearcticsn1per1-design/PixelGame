@@ -108,6 +108,7 @@ namespace PixelGame
         /// </summary>
         public void Initialize(CharacterClass classData)
         {
+            Debug.Log($"PlayerController.Initialize: Starting initialization with class: {classData?.className}");
             characterClass = classData;
 
             // Apply class stats
@@ -116,7 +117,12 @@ namespace PixelGame
             // Equip starting weapon
             if (classData.startingWeapon != null)
             {
+                Debug.Log($"PlayerController.Initialize: Starting weapon found: {classData.startingWeapon.weaponName}");
                 EquipWeapon(classData.startingWeapon);
+            }
+            else
+            {
+                Debug.LogWarning("PlayerController.Initialize: No starting weapon assigned to character class!");
             }
 
             // Apply starting traits
@@ -127,6 +133,8 @@ namespace PixelGame
                     trait?.Apply(stats);
                 }
             }
+
+            Debug.Log("PlayerController.Initialize: Initialization complete");
         }
 
         private void ApplyClassStats()
@@ -303,23 +311,45 @@ namespace PixelGame
         /// </summary>
         public void EquipWeapon(WeaponData weaponData)
         {
+            Debug.Log($"PlayerController.EquipWeapon: Called with weapon: {weaponData?.weaponName}");
+
             // Destroy current weapon
             if (currentWeapon != null)
             {
+                Debug.Log("PlayerController.EquipWeapon: Destroying previous weapon");
                 Destroy(currentWeapon.gameObject);
             }
 
             // Instantiate new weapon
             if (weaponData != null && weaponData.weaponPrefab != null)
             {
+                Debug.Log($"PlayerController.EquipWeapon: Instantiating weapon prefab at weaponPivot");
+                Debug.Log($"PlayerController.EquipWeapon: WeaponPivot = {weaponPivot?.name}, Position = {weaponPivot?.position}");
+
                 GameObject weaponObj = Instantiate(weaponData.weaponPrefab, weaponPivot);
                 weaponObj.transform.localPosition = weaponData.weaponOffset;
+
+                Debug.Log($"PlayerController.EquipWeapon: Weapon spawned: {weaponObj.name}");
+
                 currentWeapon = weaponObj.GetComponent<WeaponBase>();
 
                 if (currentWeapon != null)
                 {
+                    Debug.Log($"PlayerController.EquipWeapon: WeaponBase component found, initializing...");
                     currentWeapon.Initialize(this, stats);
+                    Debug.Log("PlayerController.EquipWeapon: Weapon equipped successfully!");
                 }
+                else
+                {
+                    Debug.LogError($"PlayerController.EquipWeapon: No WeaponBase component on {weaponObj.name}!");
+                }
+            }
+            else
+            {
+                if (weaponData == null)
+                    Debug.LogError("PlayerController.EquipWeapon: WeaponData is null!");
+                else if (weaponData.weaponPrefab == null)
+                    Debug.LogError($"PlayerController.EquipWeapon: WeaponData '{weaponData.weaponName}' has no weaponPrefab assigned!");
             }
         }
 
