@@ -43,8 +43,6 @@ namespace PixelGame
 
         private IEnumerator MeleeAttackCoroutine(Vector2 direction)
         {
-            Debug.Log("MeleeWeapon: Attack started!");
-
             // Enable hitbox for a short duration
             weaponCollider.enabled = true;
 
@@ -58,39 +56,17 @@ namespace PixelGame
                 attackRange *= (1f + playerStats.GetStat(StatType.AreaOfEffect) / 100f);
             }
 
-            // ENHANCED DEBUGGING FOR LAYER DETECTION
-            Debug.Log($"MeleeWeapon: LayerMask value = {enemyLayer.value}");
-            Debug.Log($"MeleeWeapon: Attack position = {attackPosition}, Range = {attackRange}");
-
-            // Test 1: Check with specified layer mask
             Collider2D[] hits = Physics2D.OverlapCircleAll(attackPosition, attackRange, enemyLayer);
-            Debug.Log($"MeleeWeapon: Found {hits.Length} colliders with enemyLayer mask");
-
-            // Test 2: Check what's actually there (any layer)
-            Collider2D[] allHits = Physics2D.OverlapCircleAll(attackPosition, attackRange);
-            Debug.Log($"MeleeWeapon: Found {allHits.Length} total colliders in range (all layers)");
-
-            // Log details about ALL colliders found
-            for (int i = 0; i < allHits.Length; i++)
-            {
-                int objLayer = allHits[i].gameObject.layer;
-                string layerName = LayerMask.LayerToName(objLayer);
-                Debug.Log($"  - Collider {i}: {allHits[i].name}, Layer: {layerName} ({objLayer})");
-            }
-
             DamageInfo damageInfo = CalculateDamage();
-            Debug.Log($"MeleeWeapon: Damage = {damageInfo.damage}, Crit = {damageInfo.isCritical}");
 
             foreach (var hit in hits)
             {
                 // Check if enemy is within swing arc
                 if (IsInSwingArc(hit.transform.position, direction))
                 {
-                    Debug.Log($"MeleeWeapon: Enemy {hit.name} is in swing arc!");
                     IDamageable damageable = hit.GetComponent<IDamageable>();
                     if (damageable != null && damageable.IsAlive())
                     {
-                        Debug.Log($"MeleeWeapon: Dealing {damageInfo.damage} damage to {hit.name}");
                         damageable.TakeDamage(damageInfo.damage, damageInfo.isCritical, player.gameObject);
 
                         // Apply knockback
@@ -99,14 +75,6 @@ namespace PixelGame
                         // Spawn hit effect
                         SpawnHitEffect(hit.transform.position);
                     }
-                    else
-                    {
-                        Debug.LogWarning($"MeleeWeapon: {hit.name} has no IDamageable component or is dead!");
-                    }
-                }
-                else
-                {
-                    Debug.Log($"MeleeWeapon: Enemy {hit.name} is NOT in swing arc");
                 }
             }
 
@@ -121,7 +89,6 @@ namespace PixelGame
         {
             if (attackDirection.sqrMagnitude < 0.01f)
             {
-                Debug.Log("MeleeWeapon: No attack direction, hitting everything in range");
                 return true; // No direction = hit all
             }
 
@@ -129,11 +96,7 @@ namespace PixelGame
             Vector2 toTarget = (targetPosition - attackPos).normalized;
 
             float angle = Vector2.Angle(attackDirection, toTarget);
-            bool inArc = angle <= swingArc / 2f;
-
-            Debug.Log($"MeleeWeapon: Attack dir={attackDirection}, To target={toTarget}, Angle={angle:F1}°, Arc={swingArc}°, In arc={inArc}");
-
-            return inArc;
+            return angle <= swingArc / 2f;
         }
 
         private void ApplyKnockback(GameObject target, Vector2 direction)
