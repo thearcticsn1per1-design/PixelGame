@@ -45,6 +45,9 @@ namespace PixelGame
         private bool isInvincible = false;
         private bool isDead = false;
 
+        // Animation
+        private Vector2 lastMoveDirection = Vector2.down; // Default facing down
+
         // Character class
         private CharacterClass characterClass;
 
@@ -219,7 +222,9 @@ namespace PixelGame
                 }
             }
 
-            // Flip player sprite based on movement or aim direction
+            // Note: 8-directional sprites don't need flipping - they have sprites for each direction
+            // If using simple 2D sprites without 8-directional animations, uncomment the flip code below:
+            /*
             if (spriteRenderer != null)
             {
                 if (moveInput.x != 0)
@@ -231,6 +236,7 @@ namespace PixelGame
                     spriteRenderer.flipX = aimDirection.x < 0;
                 }
             }
+            */
         }
 
         #endregion
@@ -495,9 +501,21 @@ namespace PixelGame
         {
             if (animator == null) return;
 
-            // Set movement parameters
+            // Update last move direction for idle facing
+            if (moveInput.sqrMagnitude > 0.01f)
+            {
+                lastMoveDirection = moveInput.normalized;
+            }
+
+            // Set movement direction parameters for 8-directional animation
+            // Use moveInput when moving, lastMoveDirection when idle
+            Vector2 animDirection = moveInput.sqrMagnitude > 0.01f ? moveInput.normalized : lastMoveDirection;
+
+            animator.SetFloat("MoveX", animDirection.x);
+            animator.SetFloat("MoveY", animDirection.y);
             animator.SetFloat("Speed", moveInput.magnitude);
             animator.SetBool("IsDashing", isDashing);
+            animator.SetBool("IsAttacking", currentWeapon != null && attackInput);
         }
 
         #endregion
