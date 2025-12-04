@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8759b523f7003478c3d47ec52f4edb, type: 3}
+  m_Name: TestWarrior
+  m_EditorClassIdentifier: Assembly-CSharp::PixelGame.CharacterClass
+  className: Warrior
+  description: A strong melee fighter...
+  classIcon: {fileID: 0}
+  characterSprite: {fileID: 0}
+  playerPrefab: {fileID: 1217725347691484210, guid: d9fea640976db614388bb747907e2166, type: 3}
+  healthBonus: 0
+  damageBonus: 0
+  moveSpeedBonus: 0
+  armorBonus: 0
+  statModifiers: []
+  startingWeapon: {fileID: 11400000, guid: 0cd32cd9a20a7a847ab474b38a7940a8, type: 2}
+  startingItems: []
+  startingTraits: []
+  passiveDescription: Class passive ability...
+  hasUniquePassive: 0
+  isUnlocked: 1
+  masteryLevelRequired: 0
+  unlockCondition: 

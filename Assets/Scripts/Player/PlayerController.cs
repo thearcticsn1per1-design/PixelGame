@@ -46,7 +46,7 @@ namespace PixelGame
         private bool isDead = false;
 
         // Animation
-        private Vector2 lastMoveDirection = Vector2.down; // Default facing down
+        private Vector2 lastMoveDirection = Vector2.down;
 
         // Character class
         private CharacterClass characterClass;
@@ -61,7 +61,6 @@ namespace PixelGame
 
             if (weaponPivot == null)
             {
-                // Create weapon pivot if not assigned
                 GameObject pivotObj = new GameObject("WeaponPivot");
                 pivotObj.transform.SetParent(transform);
                 pivotObj.transform.localPosition = Vector3.zero;
@@ -84,7 +83,6 @@ namespace PixelGame
             HandleAttack();
             HandlePickups();
 
-            // Apply regeneration
             stats.ApplyRegeneration(Time.deltaTime);
 
             UpdateAnimations();
@@ -106,18 +104,13 @@ namespace PixelGame
 
         #region Initialization
 
-        /// <summary>
-        /// Initialize player with character class data
-        /// </summary>
         public void Initialize(CharacterClass classData)
         {
             Debug.Log($"PlayerController.Initialize: Starting initialization with class: {classData?.className}");
             characterClass = classData;
 
-            // Apply class stats
             ApplyClassStats();
 
-            // Equip starting weapon
             if (classData.startingWeapon != null)
             {
                 Debug.Log($"PlayerController.Initialize: Starting weapon found: {classData.startingWeapon.weaponName}");
@@ -128,7 +121,6 @@ namespace PixelGame
                 Debug.LogWarning("PlayerController.Initialize: No starting weapon assigned to character class!");
             }
 
-            // Apply starting traits
             if (classData.startingTraits != null)
             {
                 foreach (var trait in classData.startingTraits)
@@ -149,7 +141,6 @@ namespace PixelGame
             stats.baseMoveSpeed += characterClass.moveSpeedBonus;
             stats.baseArmor += characterClass.armorBonus;
 
-            // Apply class-specific modifiers
             foreach (var modifier in characterClass.statModifiers)
             {
                 if (modifier.isMultiplicative)
@@ -181,16 +172,13 @@ namespace PixelGame
 
         private void HandleInput()
         {
-            // Movement input (WASD or Arrow keys)
             moveInput = new Vector2(
                 Input.GetAxisRaw("Horizontal"),
                 Input.GetAxisRaw("Vertical")
             );
 
-            // Attack input
-            attackInput = Input.GetMouseButton(0); // Left click
+            attackInput = Input.GetMouseButton(0);
 
-            // Dash input
             if (Input.GetKeyDown(KeyCode.Space) && canDash && !isDashing)
             {
                 dashInput = true;
@@ -199,7 +187,6 @@ namespace PixelGame
 
         private void HandleAiming()
         {
-            // Aim toward mouse position
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
 
@@ -207,11 +194,9 @@ namespace PixelGame
 
             if (weaponPivot != null && aimDirection.sqrMagnitude > 0.01f)
             {
-                // Rotate weapon pivot to aim direction
                 float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
                 weaponPivot.rotation = Quaternion.Euler(0, 0, angle);
 
-                // Flip weapon sprite if aiming left
                 if (weaponPivot.localScale.y > 0 && aimDirection.x < 0)
                 {
                     weaponPivot.localScale = new Vector3(weaponPivot.localScale.x, -1, 1);
@@ -221,22 +206,6 @@ namespace PixelGame
                     weaponPivot.localScale = new Vector3(weaponPivot.localScale.x, 1, 1);
                 }
             }
-
-            // Note: 8-directional sprites don't need flipping - they have sprites for each direction
-            // If using simple 2D sprites without 8-directional animations, uncomment the flip code below:
-            /*
-            if (spriteRenderer != null)
-            {
-                if (moveInput.x != 0)
-                {
-                    spriteRenderer.flipX = moveInput.x < 0;
-                }
-                else if (aimDirection.x != 0)
-                {
-                    spriteRenderer.flipX = aimDirection.x < 0;
-                }
-            }
-            */
         }
 
         #endregion
@@ -247,17 +216,14 @@ namespace PixelGame
         {
             if (isDashing)
             {
-                // Dashing movement handled by coroutine
                 return;
             }
 
-            // Normal movement
             float moveSpeed = stats.GetStat(StatType.MoveSpeed);
             Vector2 velocity = moveInput.normalized * moveSpeed;
 
             rb.linearVelocity = velocity;
 
-            // Handle dash
             if (dashInput)
             {
                 dashInput = false;
@@ -270,18 +236,15 @@ namespace PixelGame
             isDashing = true;
             canDash = false;
 
-            // Dash direction (use input or aim direction)
             Vector2 dashDir = moveInput.normalized;
             if (dashDir.sqrMagnitude < 0.1f)
             {
                 dashDir = aimDirection;
             }
 
-            // Become temporarily invincible during dash
             bool wasInvincible = isInvincible;
             isInvincible = true;
 
-            // Dash movement
             float elapsed = 0f;
             while (elapsed < dashDuration)
             {
@@ -294,7 +257,6 @@ namespace PixelGame
             isDashing = false;
             isInvincible = wasInvincible;
 
-            // Dash cooldown
             float dashCooldown = baseDashCooldown / stats.GetStat(StatType.AttackSpeed);
             yield return new WaitForSeconds(dashCooldown);
             canDash = true;
@@ -312,21 +274,16 @@ namespace PixelGame
             }
         }
 
-        /// <summary>
-        /// Equip a weapon
-        /// </summary>
         public void EquipWeapon(WeaponData weaponData)
         {
             Debug.Log($"PlayerController.EquipWeapon: Called with weapon: {weaponData?.weaponName}");
 
-            // Destroy current weapon
             if (currentWeapon != null)
             {
                 Debug.Log("PlayerController.EquipWeapon: Destroying previous weapon");
                 Destroy(currentWeapon.gameObject);
             }
 
-            // Instantiate new weapon
             if (weaponData != null && weaponData.weaponPrefab != null)
             {
                 Debug.Log($"PlayerController.EquipWeapon: Instantiating weapon prefab at weaponPivot");
@@ -359,9 +316,6 @@ namespace PixelGame
             }
         }
 
-        /// <summary>
-        /// Get reference to current weapon
-        /// </summary>
         public WeaponBase GetCurrentWeapon()
         {
             return currentWeapon;
@@ -375,35 +329,27 @@ namespace PixelGame
         {
             if (isDead || isInvincible) return;
 
-            // Check for dodge
             if (stats.RollDodge())
             {
-                // Dodged!
                 GameEvents.PlaySoundEffect("Dodge", transform.position);
                 return;
             }
 
-            // Apply damage reduction
             float damageReduction = stats.CalculateDamageReduction();
             float finalDamage = damage * (1f - damageReduction);
 
-            // Apply damage
             stats.ModifyHealth(-finalDamage);
 
-            // Trigger events
             GameEvents.PlayerDamaged(finalDamage, damageSource);
             GameEvents.DamageDealt(gameObject, finalDamage, isCritical);
 
-            // Start invincibility frames
             StartCoroutine(InvincibilityFrames());
 
-            // Check for death
             if (stats.currentHealth <= 0 && !isDead)
             {
                 Die();
             }
 
-            // Visual feedback
             StartCoroutine(DamageFlash());
         }
 
@@ -414,22 +360,18 @@ namespace PixelGame
             isDead = true;
             rb.linearVelocity = Vector2.zero;
 
-            // Trigger death events
             GameEvents.PlayerDeath();
 
-            // Death animation
             if (animator != null)
             {
                 animator.SetTrigger("Death");
             }
 
-            // Disable components
             if (currentWeapon != null)
             {
                 currentWeapon.gameObject.SetActive(false);
             }
 
-            // Game over after delay
             StartCoroutine(GameOverDelay());
         }
 
@@ -501,14 +443,11 @@ namespace PixelGame
         {
             if (animator == null) return;
 
-            // Update last move direction for idle facing
             if (moveInput.sqrMagnitude > 0.01f)
             {
                 lastMoveDirection = moveInput.normalized;
             }
 
-            // Set movement direction parameters for 8-directional animation
-            // Use moveInput when moving, lastMoveDirection when idle
             Vector2 animDirection = moveInput.sqrMagnitude > 0.01f ? moveInput.normalized : lastMoveDirection;
 
             animator.SetFloat("MoveX", animDirection.x);
@@ -533,7 +472,6 @@ namespace PixelGame
 
         private void OnDrawGizmosSelected()
         {
-            // Draw pickup range
             float pickupRange = basePickupRange;
             if (Application.isPlaying && stats != null)
             {
