@@ -58,8 +58,25 @@ namespace PixelGame
                 attackRange *= (1f + playerStats.GetStat(StatType.AreaOfEffect) / 100f);
             }
 
+            // ENHANCED DEBUGGING FOR LAYER DETECTION
+            Debug.Log($"MeleeWeapon: LayerMask value = {enemyLayer.value}");
+            Debug.Log($"MeleeWeapon: Attack position = {attackPosition}, Range = {attackRange}");
+
+            // Test 1: Check with specified layer mask
             Collider2D[] hits = Physics2D.OverlapCircleAll(attackPosition, attackRange, enemyLayer);
-            Debug.Log($"MeleeWeapon: Found {hits.Length} potential targets in range {attackRange}");
+            Debug.Log($"MeleeWeapon: Found {hits.Length} colliders with enemyLayer mask");
+
+            // Test 2: Check what's actually there (any layer)
+            Collider2D[] allHits = Physics2D.OverlapCircleAll(attackPosition, attackRange);
+            Debug.Log($"MeleeWeapon: Found {allHits.Length} total colliders in range (all layers)");
+
+            // Log details about ALL colliders found
+            for (int i = 0; i < allHits.Length; i++)
+            {
+                int objLayer = allHits[i].gameObject.layer;
+                string layerName = LayerMask.LayerToName(objLayer);
+                Debug.Log($"  - Collider {i}: {allHits[i].name}, Layer: {layerName} ({objLayer})");
+            }
 
             DamageInfo damageInfo = CalculateDamage();
             Debug.Log($"MeleeWeapon: Damage = {damageInfo.damage}, Crit = {damageInfo.isCritical}");
