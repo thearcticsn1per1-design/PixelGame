@@ -162,6 +162,22 @@ namespace PixelGame
         {
             stats.Initialize();
             SubscribeToEvents();
+
+            // Check if animator is assigned and has correct parameters
+            if (animator != null)
+            {
+                Debug.Log("PlayerController: Animator component found!");
+
+                // List all parameters for debugging
+                foreach (var param in animator.parameters)
+                {
+                    Debug.Log($"Animator Parameter: {param.name} ({param.type})");
+                }
+            }
+            else
+            {
+                Debug.LogError("PlayerController: No Animator component assigned! Animations will not work.");
+            }
         }
 
         private void Update()
@@ -546,7 +562,11 @@ namespace PixelGame
 
         private void UpdateAnimations()
         {
-            if (animator == null) return;
+            if (animator == null)
+            {
+                Debug.LogWarning("PlayerController: Animator is NULL! Please assign an Animator component in the Inspector.");
+                return;
+            }
 
 <<<<<<< Updated upstream
             if (moveInput.sqrMagnitude > 0.01f)
@@ -576,7 +596,10 @@ namespace PixelGame
             // Determine facing direction
             Direction dir = GetDirectionFromInput(input);
             if (isMoving)
+            {
                 lastDirection = dir;
+                Debug.Log($"Moving {dir} - isWalking: {isMoving}, MoveInput: {moveInput}");
+            }
 
             // Clear all movement/facing bools
             ClearDirectionBools();
