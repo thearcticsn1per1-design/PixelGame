@@ -45,9 +45,6 @@ namespace PixelGame
         private bool isInvincible = false;
         private bool isDead = false;
 
-        // Animation
-        private Vector2 lastMoveDirection = Vector2.down;
-
         // Character class
         private CharacterClass characterClass;
 
@@ -312,9 +309,10 @@ namespace PixelGame
                     weaponPivot.localScale = new Vector3(weaponPivot.localScale.x, 1, 1);
                 }
             }
-<<<<<<< Updated upstream
-=======
 
+            // Note: 8-directional sprites don't need flipping - they have sprites for each direction
+            // If using simple 2D sprites without 8-directional animations, uncomment the flip code below:
+            /*
             if (spriteRenderer != null)
             {
                 if (moveInput.x != 0)
@@ -326,7 +324,7 @@ namespace PixelGame
                     spriteRenderer.flipX = aimDirection.x < 0;
                 }
             }
->>>>>>> Stashed changes
+            */
         }
 
         #endregion
@@ -568,29 +566,11 @@ namespace PixelGame
                 return;
             }
 
-<<<<<<< Updated upstream
-            if (moveInput.sqrMagnitude > 0.01f)
-            {
-                lastMoveDirection = moveInput.normalized;
-            }
-
-            Vector2 animDirection = moveInput.sqrMagnitude > 0.01f ? moveInput.normalized : lastMoveDirection;
-
-            animator.SetFloat("MoveX", animDirection.x);
-            animator.SetFloat("MoveY", animDirection.y);
-            animator.SetFloat("Speed", moveInput.magnitude);
-            animator.SetBool("IsDashing", isDashing);
-            animator.SetBool("IsAttacking", currentWeapon != null && attackInput);
-=======
-            // Your existing animator parameters (kept exactly as-is)
-            animator.SetFloat("Speed", moveInput.magnitude);
-            animator.SetBool("IsDashing", isDashing);
-
-            // --- ADDED: 8-direction animation handling ---
+            // 8-directional animation handling
             Vector2 input = moveInput.normalized;
             bool isMoving = input.sqrMagnitude > 0.1f && !isDashing;
 
-            // Global walking flag
+            // Set walking flag
             animator.SetBool("isWalking", isMoving);
 
             // Determine facing direction
@@ -601,12 +581,11 @@ namespace PixelGame
                 Debug.Log($"Moving {dir} - isWalking: {isMoving}, MoveInput: {moveInput}");
             }
 
-            // Clear all movement/facing bools
+            // Clear all direction bools
             ClearDirectionBools();
 
-            // Apply new direction
+            // Set new direction
             SetDirectionBools(lastDirection, isMoving);
->>>>>>> Stashed changes
         }
 
         #endregion
